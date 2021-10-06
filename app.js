@@ -3,6 +3,8 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 
+const API_VERSION = process.env.API_VERSION;
+
 // database
 const connectDB = require("./config/db");
 
@@ -22,10 +24,10 @@ app.use(cors());
 app.options("*", cors());
 
 // routes.
-app.use("/api/v1", UserRouter); // user route
-app.use("/api/v1", ProductRouter); // product route
-app.use("/api/v1", OrderRouter); // order route
-app.use("/api/v1", CategoryRouter); // category route
+app.use(`${API_VERSION}/users`, UserRouter); // user route
+app.use(`${API_VERSION}/products`, ProductRouter); // product route
+app.use(`${API_VERSION}/orders`, OrderRouter); // order route
+app.use(`${API_VERSION}/categories`, CategoryRouter); // category route
 
 // server config
 const PORT = process.env.PORT || 8000;
