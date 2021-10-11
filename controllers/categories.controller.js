@@ -1,6 +1,25 @@
 const Category = require("../models/category");
 
 // @METHOD: GET
+// @ROUTE: /api/v1/categories/:id -> FETCHES A SPECIFIC CATEGORY BASED ON ID.
+exports.get_category = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const category = await Category.findOne({ _id: id });
+    if (!category)
+      return res
+        .status(400)
+        .json({ success: false, message: "No category exists with such id." });
+
+    return res.status(200).json({ success: true, data: category });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, error: err });
+  }
+};
+
+// @METHOD: GET
 // @ROUTE: /api/v1/categories -> FETCHES ALL THE CATEGORIES.
 exports.get_categories = async (req, res) => {
   try {
@@ -12,6 +31,26 @@ exports.get_categories = async (req, res) => {
         .json({ success: false, message: "No categories found!" });
 
     return res.status(200).json({ success: true, data: categories });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ success: false, error: err });
+  }
+};
+
+// @METHOD: GET
+// @ROUTE: /api/v1/categories/count -> RETURNS THE TOTAL CATEGORY INT.
+exports.total_categories = async (req, res) => {
+  try {
+    const categories = await Category.find();
+
+    if (!categories.length)
+      return res
+        .status(404)
+        .json({ success: false, message: "No categories found!" });
+
+    return res
+      .status(200)
+      .json({ success: true, count: categories.length, data: categories });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ success: false, error: err });
