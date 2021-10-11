@@ -73,6 +73,30 @@ exports.create_category = async (req, res) => {
   }
 };
 
+// @METHOD: PUT
+// @ROUTE: /api/v1/categories/:id -> UPDATES A CATEGORY BY ID.
+exports.update_category = async (req, res) => {
+  const { name, icon, color } = req.body;
+
+  try {
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      { name, icon, color },
+      { new: true }
+    );
+
+    if (!category)
+      return res
+        .status(404)
+        .json({ success: false, message: "No category found with such id." });
+
+    return res.status(200).json({ success: true, ...category._doc });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ success: false, error: err });
+  }
+};
+
 // @METHOD: DELETE
 // @ROUTE: /api/v1/categories/:id -> DELETES A CATEGORY BY ID.
 exports.delete_category = async (req, res) => {
