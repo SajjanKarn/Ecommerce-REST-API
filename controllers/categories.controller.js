@@ -25,10 +25,10 @@ exports.get_categories = async (req, res) => {
   try {
     const categories = await Category.find();
 
-    if (!categories.length)
+    if (!categories)
       return res
         .status(404)
-        .json({ success: false, message: "No categories found!" });
+        .json({ success: false, message: "categories cannot be found!" });
 
     return res.status(200).json({ success: true, data: categories });
   } catch (err) {
@@ -43,10 +43,10 @@ exports.total_categories = async (req, res) => {
   try {
     const categories = await Category.find();
 
-    if (!categories.length)
+    if (!categories)
       return res
         .status(404)
-        .json({ success: false, message: "No categories found!" });
+        .json({ success: false, message: "categories cannot be found!" });
 
     return res
       .status(200)
@@ -61,6 +61,11 @@ exports.total_categories = async (req, res) => {
 // @ROUTE: /api/v1/categories -> CREATES A CATEGORY COLLECTION.
 exports.create_category = async (req, res) => {
   const { name, icon, color } = req.body;
+
+  if (!name)
+    return res
+      .status(400)
+      .json({ success: false, message: "Please enter name of category" });
 
   try {
     const newCategory = await Category({ name, icon, color });

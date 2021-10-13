@@ -1,11 +1,10 @@
 const router = require("express").Router();
 
-router
-  .get("/", (req, res) => {
-    return res.status(200).json({ msg: "hello", success: true });
-  })
-  .get("/count", (req, res) => {
-    return res.status(200).json({ count: 10, success: true });
-  });
+const {
+  get_products,
+  create_product,
+} = require("../controllers/products.controller");
+
+router.route("/").get(get_products).post(create_product);
 
 module.exports = router;
