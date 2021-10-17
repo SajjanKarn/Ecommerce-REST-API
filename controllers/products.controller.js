@@ -188,5 +188,8 @@ exports.total_product = async (req, res) => {
         .json({ success: false, message: "Can't find products." });
 
     return res.status(200).json({ success: true, count: products.length });
-  } catch (err) {}
+  } catch (err) {
+      console.log(err);
+      return res.status(500).json({ success: false, error: err });
+  }
 };
