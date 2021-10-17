@@ -4,6 +4,10 @@ const Category = require("../models/category");
 // @ROUTE: /api/v1/categories/:id -> FETCHES A SPECIFIC CATEGORY BASED ON ID.
 exports.get_category = async (req, res) => {
   const { id } = req.params;
+  if (!mongoose.isValidObjectId(id))
+    return res
+      .status(400)
+      .json({ success: false, message: "please enter a valid id!" });
 
   try {
     const category = await Category.findOne({ _id: id });
@@ -79,7 +83,13 @@ exports.create_category = async (req, res) => {
 // @METHOD: PUT
 // @ROUTE: /api/v1/categories/:id -> UPDATES A CATEGORY BY ID.
 exports.update_category = async (req, res) => {
+  const { id } = req.params;
   const { name, icon, color } = req.body;
+
+  if (!mongoose.isValidObjectId(id))
+    return res
+      .status(400)
+      .json({ success: false, message: "please enter a valid id!" });
 
   if (!name && !icon && !color) {
     return res.status(400).json({
@@ -90,7 +100,7 @@ exports.update_category = async (req, res) => {
 
   try {
     const category = await Category.findByIdAndUpdate(
-      req.params.id,
+      id,
       { ...req.body },
       { new: true }
     );
@@ -112,10 +122,10 @@ exports.update_category = async (req, res) => {
 exports.delete_category = async (req, res) => {
   const { id } = req.params;
 
-  if (!id)
+  if (!mongoose.isValidObjectId(id))
     return res
       .status(400)
-      .json({ success: false, message: "No id specified!" });
+      .json({ success: false, message: "please enter a valid id!" });
 
   try {
     const result = await Category.findByIdAndRemove(req.params.id);
