@@ -5,12 +5,12 @@ const Product = require("../models/product");
 // @ROUTE: /api/v1/products -> CREATES A NEW PRODUCT.
 exports.get_products = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate("category");
 
     if (!products)
       return res
         .status(404)
-        .json({ success: false, message: "products cannot be found!" });
+        .json({ success: false, message: "Can't find products." });
 
     return res.status(200).json({ success: true, data: products });
   } catch (err) {
@@ -19,9 +19,33 @@ exports.get_products = async (req, res) => {
   }
 };
 
+// @METHOD: GET
+// @ROUTE: /api/v1/products/:id -> FETCHES DEATAIL ABOUT A SPECIFIC PRODUCT.
+exports.get_product = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id)
+    return res
+      .status(400)
+      .json({ success: false, message: "Please enter a ID!" });
+
+  try {
+    const product = await Product.findById(id).populate("category");
+
+    if (!product)
+      return res
+        .status(400)
+        .json({ success: false, message: "No product found with such id." });
+
+    return res.status(200).json({ success: true, data: product });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, error: err });
+  }
+};
+
 // @METHOD: POST
 // @ROUTE: /api/v1/products -> CREATES A NEW PRODUCT.
-
 exports.create_product = async (req, res) => {
   const {
     name,
@@ -64,11 +88,6 @@ exports.create_product = async (req, res) => {
     });
 
     const result = await newProduct.save();
-    if (!result)
-      return res
-        .status(400)
-        .json({ success: false, message: "the product cannot be created." });
-
     return res.status(201).json({ success: true, ...result._doc });
   } catch (err) {
     console.log(err);

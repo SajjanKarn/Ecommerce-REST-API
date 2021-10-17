@@ -28,7 +28,7 @@ exports.get_categories = async (req, res) => {
     if (!categories)
       return res
         .status(404)
-        .json({ success: false, message: "categories cannot be found!" });
+        .json({ success: false, message: "Can't find categories." });
 
     return res.status(200).json({ success: true, data: categories });
   } catch (err) {
@@ -46,11 +46,9 @@ exports.total_categories = async (req, res) => {
     if (!categories)
       return res
         .status(404)
-        .json({ success: false, message: "categories cannot be found!" });
+        .json({ success: false, message: "Can't find categories." });
 
-    return res
-      .status(200)
-      .json({ success: true, count: categories.length, data: categories });
+    return res.status(200).json({ success: true, count: categories.length });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ success: false, error: err });
@@ -83,10 +81,17 @@ exports.create_category = async (req, res) => {
 exports.update_category = async (req, res) => {
   const { name, icon, color } = req.body;
 
+  if (!name && !icon && !color) {
+    return res.status(400).json({
+      success: false,
+      message: "Please enter all the required fields!",
+    });
+  }
+
   try {
     const category = await Category.findByIdAndUpdate(
       req.params.id,
-      { name, icon, color },
+      { ...req.body },
       { new: true }
     );
 
@@ -117,7 +122,7 @@ exports.delete_category = async (req, res) => {
     if (!result)
       return res
         .status(400)
-        .json({ success: false, message: "Category not found!" });
+        .json({ success: false, message: "No category found with such id." });
 
     return res.status(200).json({ success: true, ...result._doc });
   } catch (err) {
